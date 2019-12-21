@@ -39,6 +39,15 @@ export default {
             checked: false
         }
     },
+  created(){
+        let _this = this;
+        document.onkeydown = function(e) {
+          let key = window.event.keyCode;
+          if (key == 13) {
+            _this.handleSubmit();
+          }
+        };
+      },
     methods: {
         login(data_,self,callBack){
             this.$axios({
