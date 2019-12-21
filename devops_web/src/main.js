@@ -8,8 +8,8 @@ import 'element-ui/lib/theme-chalk/index.css'
 import Axios from 'axios'
 
 import apiUrl from './comment/comment'
-Axios.defaults.withCredentials = true
-Vue.prototype.$axios=Axios
+Axios.defaults.withCredentials = true;
+Vue.prototype.$axios=Axios;
 
 
 // console.log(axios.defaults.withCredentials)
@@ -52,4 +52,4 @@ new Vue({
   router,
   components: { App },
   template: '<App/>'
-})
+});

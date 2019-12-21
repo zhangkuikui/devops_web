@@ -6,6 +6,7 @@ import Home from '../components/Home'
 import HostAll from '../components/page/host/HostAll'
 import Login from '../components/page/Login'
 import WebSSH from '../components/WebSSH'
+import Error from '../components/page/Error'
 
 
 
@@ -42,7 +43,8 @@ export default new Router({
     },
     {
       path: '*',
-      redirect: '/login'
+      name:'Error',
+      component: Error,
     }
 
   ]
