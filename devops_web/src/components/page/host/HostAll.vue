@@ -36,12 +36,13 @@
                 </el-dialog>
             <!-- Dialog弹出框⬆️ -->
         <el-table
-            :data="tableData.slice((current_page-1)*page_size,current_page*page_size)"
+            :data="tableData"
             style="width: 100%"
             border
+            @sort-change='sortChange'
             id="mtab">
-            <el-table-column label="id" prop="id" sortable align="center"></el-table-column>
-            <el-table-column label="主机名" prop="host_name" sortable align="center">
+            <el-table-column label="id" prop="id" sortable='custom' align="center"></el-table-column>
+            <el-table-column label="主机名" prop="host_name" sortable='custom' align="center">
               <template slot-scope="scope">
                 <!--el-popover 点击弹出输入框 修改文件内容-->
                 <el-popover trigger="click" placement="top"
@@ -61,7 +62,7 @@
                 </el-popover>
               </template>
             </el-table-column>
-            <el-table-column label="业务组" prop="group_name" sortable align="center"></el-table-column>
+            <el-table-column label="业务组" prop="group_name" sortable='custom' align="center"></el-table-column>
             <!-- show-overflow-tooltip 内容过长以...代替 -->
             <el-table-column label="内网地址" prop="ip_inside" show-overflow-tooltip align="center">
               <template slot-scope="scope">
@@ -103,6 +104,21 @@
                 </el-popover>
               </template>
             </el-table-column>
+            <el-table-column label="操作" align="center">
+              <template slot-scope="scope">
+                <el-button
+                  size="mini"
+                  type="danger"
+                  @click="handleDelete(scope.$index, scope.row)">删除
+                </el-button>
+                <el-button
+                  size="mini"
+                  type="success"
+                  @click="handleConnet(scope.$index, scope.row)">链接
+                </el-button>
+
+              </template>
+            </el-table-column>
         </el-table>
         <!-- 表格部分 ⬆️-->
 
@@ -121,7 +137,11 @@
     </div>
 </template>
 <script>
+import WebSSH from '../../WebSSH'
 export default {
+    components:{
+      WebSSH
+    },
     data() {
       return {
         //
@@ -133,12 +153,16 @@ export default {
         page_size:10,
         current_page:1,
         page_sizes:[10,20,25],
+        order:'asc',
+        sort:'id',
+
         // 表格中的数据
         tableData: [],
         showEdit: [], //显示编辑框
 
         // dialog相关参数
         dialogVisible: false,
+        dialogVisibleWebSSH:false,
 
         // form表单相关参数
         hostlist:['xifeng1','baochai','baoyu','yinjiao','jinjiao'],
@@ -163,10 +187,9 @@ export default {
       }
     },
     methods:{
-
         getHostAll(data_,self,callBack){
             this.$axios({
-                url:this.$apiUrl.host.get_hostAll
+                url:this.$apiUrl.host.get_hostAll+data_
             }).then(res=>{
                 callBack(self,res.data)
             })
@@ -202,11 +225,13 @@ export default {
         // 刷新表格按钮
         up(){
             let that = this;
-            let data='';
+            // pages,page_count,sort,order,search
+
+            let data=`?pages=${this.current_page}&page_count=${this.page_size}&sort=${this.sort}&order=${this.order}&search=`;
             that.getHostAll(data,that,function (self,ret_data){
                 if(ret_data.status==='ok'){
-                    self.tableData=ret_data.data;
-                    self.total=self.tableData.length
+                    self.tableData=ret_data.rows;
+                    self.total=ret_data.total;
                 }else{
                     self.$notify({
                         title: ret_data.status,
@@ -219,18 +244,6 @@ export default {
                 }
             })
         },
-        //编辑按钮
-
-        handleEdit(index, row) {
-        // console.log(index, row);
-
-          // this.showEdit[index] = true;
-          // this.showBtn[index] = true;
-          // this.$set(this.showEdit,row,true)
-          // this.$set(this.showBtn,row,true)
-          // // this.$router.push({path:'/ssh'})
-        },
-
 
         //取消编辑
         cancelClick(scope){
@@ -275,97 +288,137 @@ export default {
           this.$refs[`${scope.column.property}-${scope.$index}`].doClose();
           },
 
-      // 删除
-      handleDelete(index, row) {
-          let that = this;
-          let data=new URLSearchParams();
-          data.append("id",row.id);
-          this.hostdel(data,that,function (self,ret_data){
-              if(ret_data.status==='ok'){
-                  that.up();
-                  self.$notify({
-                      title: '成功',
-                      message: '<i>'+'本次调用已成功'+'</i>',
-                      type: 'success',
-                      duration:1000,
-                      });
-              }else{
-                  self.$notify({
-                      title: ret_data.status,
-                      // message: '本次调用已报错'
-                      dangerouslyUseHTMLString: true,
-                      message: '<i>'+ret_data.describe+'</i>',
-                      type:'error',
-                      duration:1000,
-                  });
-              }
-          })
-      },
-
-      // 分页部分
-      handleSizeChange(val) {
-
-          this.page_size=val
-
-          // console.log(`每页 ${val} 条`);
-      },
-      handleCurrentChange(val) {
-
-          this.current_page=val
-      // console.log(`当前页: ${val}`);
-      },
-
-      // 关闭dialog
-      handleClose(done) {
-          done();
-      },
-      // 表单
-      submitForm(formName) {
-          this.$refs[formName].validate((valid) => {
-              if (valid) {
-                  let that = this;
-                  let data=new URLSearchParams();
-                  data.append("group_name",that.ruleForm.group_name);
-                  data.append("host_name",that.ruleForm.host_name);
-                  data.append("ip_inside",that.ruleForm.ip_inside);
-                  data.append("ip_outside",that.ruleForm.ip_outside);
-                  // this.$message.error('ret_data.describe')
-                  this.hostadd(data,that,function (self,ret_data){
-                      if(ret_data.status==='ok'){
-                          self.dialogVisible=false
-                          that.up();
-                          self.$notify({
-                              title: '成功',
-                              dangerouslyUseHTMLString: true,
-                              message: '</i>'+'本次调用已成功'+'</i>',
-                              type: 'success',
-                              duration:1000,
-                              });
-                      }else{
-                          self.$notify({
-                          title: ret_data.status,
-                          // message: '本次调用已报错'
-                          dangerouslyUseHTMLString: true,
-                          message: '<i>'+ret_data.describe+'</i>',
-                          type:'error',
-                          duration:1000,
-                              });
-                      }
-                  })
-              } else {
-                  // console.log('error submit!!');
-                  return false;
-                  }
-              });
-      },
-      resetForm(formName) {
-          this.$refs[formName].resetFields();
-          }
+        // 删除
+        handleDelete(index, row) {
+            let that = this;
+            let data=new URLSearchParams();
+            data.append("id",row.id);
+            this.hostdel(data,that,function (self,ret_data){
+                if(ret_data.status==='ok'){
+                    that.up();
+                    self.$notify({
+                        title: '成功',
+                        dangerouslyUseHTMLString: true,
+                        message: '<i>'+'本次调用已成功'+'</i>',
+                        type: 'success',
+                        duration:1000,
+                        });
+                }else{
+                    self.$notify({
+                        title: ret_data.status,
+                        // message: '本次调用已报错'
+                        dangerouslyUseHTMLString: true,
+                        message: `<i>${ret_data.describe}</i>`,
+                        type:'error',
+                        duration:1000,
+                    });
+                }
+            })
         },
+
+        //链接handleConnet
+        handleConnet(index,row){
+          this.$router.push({path:'/ssh'});
+          // console.log(row)
+        },
+
+        // 分页部分
+        handleSizeChange(val) {
+
+            this.page_size=val;
+            this.up()
+
+            // console.log(`每页 ${val} 条`);
+        },
+        handleCurrentChange(val) {
+
+            this.current_page=val;
+            this.up()
+
+        // console.log(`当前页: ${val}`);
+        },
+        //后端排序
+        sortChange: function(column) {
+
+          if(column.order=='ascending'){
+            this.order='asc';
+            this.sort=column['prop'];
+            this.up()
+          }else if(column.order=='descending'){
+            this.order='desc';
+            this.sort=column['prop'];
+            this.up()
+          }else{
+            this.order='asc';
+            this.sort='id';
+            this.up()
+          }
+          // console.log(column + '-' + column.prop + '-' + column.order)
+        },
+
+        // 关闭dialog
+        handleClose(done) {
+            done();
+        },
+
+        //webssh
+        handleCloseWebSSH(done){
+          done()
+          // console.log(done);
+        },
+
+        // 表单
+        submitForm(formName) {
+            this.$refs[formName].validate((valid) => {
+                if (valid) {
+                    let that = this;
+                    let data=new URLSearchParams();
+                    data.append("group_name",that.ruleForm.group_name);
+                    data.append("host_name",that.ruleForm.host_name);
+                    data.append("ip_inside",that.ruleForm.ip_inside);
+                    data.append("ip_outside",that.ruleForm.ip_outside);
+                    // this.$message.error('ret_data.describe')
+                    this.hostadd(data,that,function (self,ret_data){
+                        if(ret_data.status==='ok'){
+                            self.dialogVisible=false
+                            that.up();
+                            self.$notify({
+                                title: '成功',
+                                dangerouslyUseHTMLString: true,
+                                message: '</i>'+'本次调用已成功'+'</i>',
+                                type: 'success',
+                                duration:1000,
+                                });
+                        }else{
+                            self.$notify({
+                            title: ret_data.status,
+                            // message: '本次调用已报错'
+                            dangerouslyUseHTMLString: true,
+                            message: '<i>'+ret_data.describe+'</i>',
+                            type:'error',
+                            duration:1000,
+                                });
+                        }
+                    })
+                } else {
+                    // console.log('error submit!!');
+                    return false;
+                    }
+                });
+        },
+        resetForm(formName) {
+            this.$refs[formName].resetFields();
+            }
+          },
     mounted(){
         this.up()
     }
+
+
 }
+
+
+
 </script>
 <style scoped>
 
