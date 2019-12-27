@@ -60,7 +60,7 @@
     <p id="webTitle">
       <el-button @click.native="closeSSH" icon="el-icon-close" size="mini"></el-button>
     </p>
-    <div id="terminal-container">
+    <div id="terminal-container" ref="elmain">
 
     </div>
   </div>
@@ -72,6 +72,8 @@
   import 'xterm/dist/xterm.css'
   import * as fit from 'xterm/lib/addons/fit/fit';
   import * as attach from 'xterm/lib/addons/attach/attach'
+  import * as fullscreen from 'xterm/lib/addons/fullscreen/fullscreen';
+  Terminal.applyAddon(fullscreen);  // Apply the `fullscreen` addon
   Terminal.applyAddon(fit);
   Terminal.applyAddon(attach);
 
@@ -82,11 +84,9 @@
         copy: "",
         websock: null,
         term: null,
+        cols:null,
+        rows:null
       }
-    },
-    created(){
-      this.initWebSocket();
-      // this.itermOpen();
     },
     destroyed() {
       this.websock.close() //离开路由之后断开websocket连接
@@ -98,8 +98,15 @@
         this.$router.push({path:'/host/hostAll'})
       },
       initWebSocket(){ //初始化weosocket
+        let data={
+          "hostid":this.$route.query.hostid,
+          "cols":this.cols,
+          "rows":this.rows
+        };
+        let data_json=JSON.stringify(data);
+        let token=data_json;
         const wsuri = "ws://127.0.0.1:2020/terminals/";
-        this.websock = new WebSocket(wsuri);
+        this.websock = new WebSocket(wsuri+'?token='+token);
         this.websock.onmessage = this.websocketonmessage;
         this.websock.onopen = this.websocketonopen;
         this.websock.onerror = this.websocketonerror;
@@ -108,12 +115,17 @@
       websocketonopen(){ //连接建立之后执行send方法发送数据
         // let actions = {"test":"12345"};
         // this.websocketsend(JSON.stringify(actions));
+        // let token='zhangkuikui&close:'+this.close+'rows:'+this.rows;
+        // this.websock.send(token)
       },
-      websocketonerror(){//连接建立失败重连
-        this.initWebSocket();
+      websocketonerror(e){//连接建立失败重连
+        console.log(e);
+        // this.initWebSocket();
       },
       websocketonmessage(evt){ //数据接收
-        let str = evt.data;
+        let str = evt;
+        // console.log('msg');
+        // console.log(evt);
         // console.log(str);
         // this.term.write(str);
         // const redata = JSON.parse(e.data);
@@ -129,12 +141,20 @@
     },
     mounted () {
       var __this = this;
+      __this.cols=parseInt(document.getElementsByClassName('el-main')[0].children[0].offsetWidth /9);
+      __this.rows=parseInt(document.getElementsByClassName('el-main')[0].children[0].offsetHeight /18);
+      __this.initWebSocket();
+      console.log(__this.cols);
+      console.log(__this.rows);
+
       __this.term = new Terminal({
-        rendererType: "canvas", //渲染类型
-        rows: 40, //行数
+        // rendererType: "canvas", //渲染类型
+        cols: __this.cols,
+        rows: __this.rows,
         convertEol: true, //启用时，光标将设置为下一行的开头
         scrollback:100,//终端中的回滚量
-        disableStdin: false, //是否应禁用输入。
+        // tabStopWidth: 8,
+        // disableStdin: false, //是否应禁用输入。
         cursorStyle: 'bar', //光标样式
         cursorBlink: true, //光标闪烁
         theme: {
@@ -143,7 +163,11 @@
           // cursor: 'help',//设置光标
         }
       });
-      // __this.term.fit;
+
+      // window.onresize = function() {
+      //   __this.term.fit();
+      //   term.scrollToBottom();
+      // };
       __this.term.open(document.getElementById('terminal-container'));
 
       __this.term.attach(__this.websock);
@@ -174,21 +198,22 @@
 </script>
 
 <style scoped>
+  .container{
+    height: 100%;
+  }
   #webTitle{
     background-color: #dcdcdb;
     margin: 0;
+  }
+  #webTitle{
+    border-bottom: #909090 solid;
   }
   #webTitle>button{
     background-color: #dcdcdb;
     border:none;
 
   }
-  html,body {
-    width: 100%;
-    height: 100%;
-    margin: 0;
-    overflow: hidden;
-  }
+
 
 </style>
 

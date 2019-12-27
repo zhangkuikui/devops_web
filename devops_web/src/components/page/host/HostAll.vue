@@ -318,7 +318,12 @@ export default {
 
         //链接handleConnet
         handleConnet(index,row){
-          this.$router.push({path:'/ssh'});
+          this.$router.push({
+            path:'/ssh',
+            query: {
+              hostid: row.id
+            }
+          });
           // console.log(row)
         },
 

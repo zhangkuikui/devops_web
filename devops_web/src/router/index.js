@@ -34,6 +34,7 @@ export default new Router({
           name: 'WebSSH',
           component: WebSSH
         }
+
       ]
     },
     {
