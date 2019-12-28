@@ -3,7 +3,17 @@
     <div id="hostAll">
         <h1>全部机器</h1>
         <!-- 表格部分 ⬇️-->
-        <el-button type="danger" size="medium" @click="dialogVisible = true">添加机器+</el-button><el-button @click.native="up" size="medium">刷新</el-button>
+        <el-button type="danger" size="medium" @click="dialogVisible = true">添加机器+</el-button>
+        <el-button @click.native="up" type="success" size="medium">刷新</el-button>
+
+        <el-col :span="4" id="search_input">
+          <el-input
+            placeholder="搜索"
+            v-model="search_input" @keyup.enter.native="up">
+          </el-input>
+        </el-col>
+
+
             <!-- Dialog弹出框⬇️ -->
                 <el-dialog
                 title="提示"
@@ -148,6 +158,9 @@ export default {
         popoverShow:true,
         popoverId:'',
 
+        //搜索字符
+        search_input:'',
+
         //分页部分
         total:0,
         page_size:10,
@@ -224,11 +237,11 @@ export default {
 
         // 刷新表格按钮
         up(){
-            let that = this;
+          let that = this;
             // pages,page_count,sort,order,search
 
-            let data=`?pages=${this.current_page}&page_count=${this.page_size}&sort=${this.sort}&order=${this.order}&search=`;
-            that.getHostAll(data,that,function (self,ret_data){
+          let data=`?pages=${this.current_page}&page_count=${this.page_size}&sort=${this.sort}&order=${this.order}&search=${this.search_input}`;
+          that.getHostAll(data,that,function (self,ret_data){
                 if(ret_data.status==='ok'){
                     self.tableData=ret_data.rows;
                     self.total=ret_data.total;
@@ -449,6 +462,12 @@ h1{
     margin-bottom: 0;
     width: 50%;
   }
+
+#search_input{
+  float: right;
+  margin-right:50px;
+  margin-bottom: 10px;
+}
 
 
 
