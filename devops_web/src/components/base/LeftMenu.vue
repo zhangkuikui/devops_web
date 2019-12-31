@@ -13,32 +13,23 @@
         background-color="#3d3d3d"
         text-color="#b8b8b8"
         router>
-            <el-menu-item index="/">
-                <i class="el-icon-s-home"></i>
-                <span>首页</span>
+          <div v-for="(iterm,i) in menus" :key="i">
+            <el-submenu :index="iterm.menu_id" v-if="iterm.children">
+              <template slot="title">
+                <i :class="iterm.icon"></i>
+                <span>{{iterm.description}}</span>
+              </template>
+              <el-menu-item-group>
+                <el-menu-item v-for="(iterm2,i2) in iterm.children" :key="i2" :index="iterm2.router">{{iterm2.description}}</el-menu-item>
+              </el-menu-item-group>
+            </el-submenu>
+            <el-menu-item  :index="iterm.router" v-else>
+              <i :class="iterm.icon"></i>
+              <span>{{iterm.description}}</span>
             </el-menu-item>
-            <el-submenu index="2">
-                    <template slot="title">
-                        <i class="el-icon-s-operation"></i>
-                        <span>机器管理</span>
-                    </template>
-                    <el-menu-item-group>
-                        <!-- <template slot="title">分组一</template>  -->
-                        <el-menu-item index="/host/hostAll">全部机器</el-menu-item>
-                        <el-menu-item index="/a/b">分组管理</el-menu-item>
-                        <el-menu-item index="2-3">标签管理</el-menu-item>
-                    </el-menu-item-group>
-            </el-submenu>
-            <el-submenu index="3">
-                <template slot="title">
-                    <i class="el-icon-menu"></i>
-                    <span>机器配置</span>
-                </template>
-                <el-menu-item-group>
-                    <el-menu-item index="3-1">配置管理</el-menu-item>
-                    <el-menu-item index="3-2">SSH管理</el-menu-item>
-                </el-menu-item-group>
-            </el-submenu>
+          </div>
+
+
         </el-menu>
     </el-aside>
 
@@ -57,23 +48,45 @@ export default {
     data() {
       return {
         isCollapse: false,
-        activerouter:'/'
+        activerouter:'/',
+        menus:[],
       };
     },
     mounted(){
     this.activerouter = window.location.pathname;
+    this.up()
     },
     methods: {
-        // handleOpen(key, keyPath) {
-        //     console.log(key, keyPath);
-        // },
-        // handleClose(key, keyPath) {
-        //     console.log(key, keyPath);
-        // }
+      getCurrentMenu(data_,self,callBack){
+        this.$axios({
+          url:this.$apiUrl.site.sitemenu_current+data_
+        }).then(res=>{
+          callBack(self,res.data)
+        })
+      },
+      up(){
+        let that = this;
+        // pages,page_count,sort,order,search
+
+        let data='';
+        that.getCurrentMenu(data,that,function (self,ret_data){
+          if(ret_data.status==='ok'){
+            that.menus=ret_data.data;
+          }else{
+            self.$notify({
+              title: ret_data.status,
+              // message: '本次调用已报错'
+              dangerouslyUseHTMLString: true,
+              message: '<i>'+ret_data.describe+'</i>',
+              type:'error',
+              duration:1000,
+            });
+          }
+        })
+      },
+
         }
 }
-
-
 </script>
 
 <style>

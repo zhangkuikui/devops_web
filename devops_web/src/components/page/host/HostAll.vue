@@ -13,38 +13,37 @@
           </el-input>
         </el-col>
 
+        <!-- Dialog弹出框⬇️ -->
+            <el-dialog
+            title="提示"
+            :visible.sync="dialogVisible"
+            width="50%"
+            :before-close="handleClose">
+                <!-- form表单 ⬇️ -->
+                    <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
 
-            <!-- Dialog弹出框⬇️ -->
-                <el-dialog
-                title="提示"
-                :visible.sync="dialogVisible"
-                width="50%"
-                :before-close="handleClose">
-                    <!-- form表单 ⬇️ -->
-                        <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
-
-                            <el-form-item label="主机名" prop="host_name" >
-                                <el-select v-model="ruleForm.host_name" placeholder="请选择主机">
-                                    <el-option v-for="(v,index) in hostlist" :label=v :value=v :key=index></el-option>
-                                </el-select>
-                            </el-form-item>
-                            <el-form-item label="业务组" prop="group_name">
-                                <el-input v-model="ruleForm.group_name"></el-input>
-                            </el-form-item>
-                            <el-form-item label="内网地址" prop="ip_inside">
-                                <el-input v-model="ruleForm.ip_inside"></el-input>
-                            </el-form-item>
-                            <el-form-item label="外网地址" >
-                                <el-input v-model="ruleForm.ip_outside"></el-input>
-                            </el-form-item>
-                            <el-form-item>
-                                <el-button type="primary" @click="submitForm('ruleForm')" :plain="true">提交</el-button>
-                                <el-button @click="resetForm('ruleForm')">重置</el-button>
-                            </el-form-item>
-                        </el-form>
-                    <!-- form表单 ⬆️ -->
-                </el-dialog>
-            <!-- Dialog弹出框⬆️ -->
+                        <el-form-item label="主机名" prop="host_name" >
+                            <el-select v-model="ruleForm.host_name" placeholder="请选择主机">
+                                <el-option v-for="(v,index) in hostlist" :label=v :value=v :key=index></el-option>
+                            </el-select>
+                        </el-form-item>
+                        <el-form-item label="业务组" prop="group_name">
+                            <el-input v-model="ruleForm.group_name"></el-input>
+                        </el-form-item>
+                        <el-form-item label="内网地址" prop="ip_inside">
+                            <el-input v-model="ruleForm.ip_inside"></el-input>
+                        </el-form-item>
+                        <el-form-item label="外网地址" >
+                            <el-input v-model="ruleForm.ip_outside"></el-input>
+                        </el-form-item>
+                        <el-form-item>
+                            <el-button type="primary" @click="submitForm('ruleForm')" :plain="true">提交</el-button>
+                            <el-button @click="resetForm('ruleForm')">重置</el-button>
+                        </el-form-item>
+                    </el-form>
+                <!-- form表单 ⬆️ -->
+            </el-dialog>
+        <!-- Dialog弹出框⬆️ -->
         <el-table
             :data="tableData"
             style="width: 100%"
@@ -154,9 +153,8 @@ export default {
     },
     data() {
       return {
-        //
-        popoverShow:true,
-        popoverId:'',
+        // popoverShow:true,
+        // popoverId:'',
 
         //搜索字符
         search_input:'',
@@ -256,7 +254,7 @@ export default {
                     });
                 }
             })
-        },
+          },
 
         //取消编辑
         cancelClick(scope){
@@ -308,6 +306,9 @@ export default {
             data.append("id",row.id);
             this.hostdel(data,that,function (self,ret_data){
                 if(ret_data.status==='ok'){
+                    if((self.current_page - 1) * self.page_size>self.total-2){
+                    self.current_page-=1;
+                    }
                     that.up();
                     self.$notify({
                         title: '成功',
@@ -356,7 +357,7 @@ export default {
         // console.log(`当前页: ${val}`);
         },
         //后端排序
-        sortChange: function(column) {
+        sortChange:function(column) {
 
           if(column.order=='ascending'){
             this.order='asc';
@@ -427,7 +428,8 @@ export default {
         resetForm(formName) {
             this.$refs[formName].resetFields();
             }
-          },
+
+        },
     mounted(){
         this.up()
     }
