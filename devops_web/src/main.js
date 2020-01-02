@@ -18,23 +18,29 @@ Vue.prototype.$axios=Axios;
 Vue.prototype.$apiUrl=apiUrl;
 
 // router.beforeEach((to, from, next) => {
-//      document.title=to.name;   //让页面title显示路由对应的name值--xlz
-//     if (to.path == '/login') {
-//       sessionStorage.removeItem('user');
-//     }
-//     let user = JSON.parse(sessionStorage.getItem('user')); 
-//     if (!user && to.path != '/login') {   //如果获取不到user说明登录失效了
-//         if( to.path == '/regist/regist' || to.path == '/mobile/exampaper'){
-//           next();
-//         }else{
-//           next({ 
-//               path: '/login',
-//               query: {redirect: to.fullPath} // 将跳转的路由path作为参数，登录成功后跳转到该路由-xlz
-//           });
-//         }
-//     } else {
-//       next()
-//     }
+//   Axios({
+//     url:apiUrl.getuser,
+//   }).then(res=>{
+//       next();
+//   })
+//
+//   //   document.title=to.name;   //让页面title显示路由对应的name值--xlz
+//   //   if (to.path == '/login') {
+//   //     sessionStorage.removeItem('user');
+//   //   }
+//   //   let user = JSON.parse(sessionStorage.getItem('user')); 
+//   //   if (!user && to.path != '/login') {   //如果获取不到user说明登录失效了
+//   //       if( to.path == '/regist/regist' || to.path == '/mobile/exampaper'){
+//   //         next();
+//   //       }else{
+//   //         next({ 
+//   //             path: '/login',
+//   //             query: {redirect: to.fullPath} // 将跳转的路由path作为参数，登录成功后跳转到该路由-xlz
+//   //         });
+//   //       }
+//   //   } else {
+//   //     next()
+//   //   }
 //   });
 
 

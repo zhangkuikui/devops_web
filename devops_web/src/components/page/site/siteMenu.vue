@@ -3,7 +3,7 @@
       <h1>菜单管理</h1>
       <!-- 表格部分 ⬇️-->
       <el-button type="danger" size="medium" @click="dialogVisible = true">添加菜单+</el-button>
-      <el-button @click.native="up" type="success" size="medium">刷新</el-button>
+      <el-button @click="up" type="success" size="medium">刷新</el-button>
       <!-- Dialog弹出框⬇️ -->
       <el-dialog
         title="提示"
@@ -47,7 +47,7 @@
         id="mtab">
         <el-table-column label="菜单名称" prop="menu_name" align="center"></el-table-column>
         <el-table-column label="描述" prop="description" align="center"></el-table-column>
-        <el-table-column label="ID" prop="menu_id" align="center"></el-table-column>
+        <el-table-column label="菜单ID" prop="menu_id" align="center"></el-table-column>
         <el-table-column label="路由" prop="router" align="center">
           <template slot-scope="scope">
             <span v-if="scope.row.router">{{scope.row.router}}</span>
@@ -138,6 +138,7 @@ export default {
   },
 
   methods:{
+    //获取菜单列表
     getMenuList(data_,self,callBack){
       this.$axios({
         url:this.$apiUrl.site.sitemenu_list+data_
@@ -145,6 +146,7 @@ export default {
         callBack(self,res.data)
       })
     },
+    //添加菜单
     menuAdd(data_,self,callBack){
       this.$axios({
         url:this.$apiUrl.site.sitemenu_add,
@@ -154,6 +156,7 @@ export default {
         callBack(self,res.data)
       })
     },
+    //删除菜单
     menuDel(data_,self,callBack){
       this.$axios({
         url:this.$apiUrl.site.sitemenu_del,
@@ -310,6 +313,9 @@ export default {
     /*border-bottom: 1px dashed #666666;*/
   }
 
+  #siteMenu>button{
+    margin-bottom:10px;
+  }
 
 
 

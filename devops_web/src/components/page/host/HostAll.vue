@@ -4,7 +4,7 @@
         <h1>全部机器</h1>
         <!-- 表格部分 ⬇️-->
         <el-button type="danger" size="medium" @click="dialogVisible = true">添加机器+</el-button>
-        <el-button @click.native="up" type="success" size="medium">刷新</el-button>
+        <el-button @click="up" type="success" size="medium">刷新</el-button>
 
         <el-col :span="4" id="search_input">
           <el-input

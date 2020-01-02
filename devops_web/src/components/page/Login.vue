@@ -66,7 +66,7 @@ export default {
                     data.append("username",that.loginForm.username);
                     data.append("password",that.loginForm.password);
                     this.login(data,that,function (self,ret_data){
-                        if(ret_data.status==='ok'){
+                      if(ret_data.status==='ok'){
                             self.$notify({
                                 title: '成功',
                                 dangerouslyUseHTMLString: true,
@@ -77,7 +77,7 @@ export default {
                                 let redirect = decodeURIComponent(self.$route.query.redirect || '/'); 
                                 console.log(redirect);
                                 // that.$router.push({ path: redirect })// 获取登录成功后要跳转的路由。decodeURIComponent函数编码的 URI 进行解码--xlz
-
+                                // console.log('认证成功');
                                 that.$router.push({path: '/'});
                         }else{
                                 self.$notify({
