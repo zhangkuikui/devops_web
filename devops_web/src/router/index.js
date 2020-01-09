@@ -9,6 +9,7 @@ import WebSSH from '../components/WebSSH'
 import Error from '../components/page/Error'
 import SiteMenu from '../components/page/site/siteMenu'
 import SiteRole from '../components/page/site/siteRole'
+import SiteRoleMenu from '../components/page/site/siteRoleMenu'
 
 
 
@@ -51,6 +52,13 @@ export default new Router({
           path: '/site/role',
           name: 'SiteRole',
           component: SiteRole
+
+        },
+        {
+          //站点设置-角色绑定菜单
+          path: '/site/roleMenu',
+          name: 'SiteRoleMenu',
+          component: SiteRoleMenu
 
         },
       ]

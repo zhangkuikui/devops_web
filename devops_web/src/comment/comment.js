@@ -20,6 +20,12 @@ const apiUrl={
       siterole_list:"http://127.0.0.1:2020/site/roleList",
       siterole_add:"http://127.0.0.1:2020/site/roleAdd",
       siterole_del:"http://127.0.0.1:2020/site/roleDel",
+
+      //角色和菜单绑定
+      siteRoleName_list:"http://127.0.0.1:2020/site/roleNameList",
+      siteRoleMenu_list:"http://127.0.0.1:2020/site/roleMenuList",
+      siteMenuName_list:"http://127.0.0.1:2020/site/MenuNameList",
+      siteRoleMenuAdd:"http://127.0.0.1:2020/site/roleMenuAdd",
     }
 
 };

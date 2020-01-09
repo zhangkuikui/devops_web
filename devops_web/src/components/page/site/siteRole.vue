@@ -154,7 +154,7 @@
             })
           },
 
-          // 表单
+          // 表单提交
           submitForm(formName) {
             this.$refs[formName].validate((valid) => {
               if (valid) {
