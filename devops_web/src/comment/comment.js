@@ -26,6 +26,12 @@ const apiUrl={
       siteRoleMenu_list:"http://127.0.0.1:2020/site/roleMenuList",
       siteMenuName_list:"http://127.0.0.1:2020/site/MenuNameList",
       siteRoleMenuAdd:"http://127.0.0.1:2020/site/roleMenuAdd",
+
+      // 用户绑定角色
+      siteUserName_list:"http://127.0.0.1:2020/site/userNameList",
+      siteUserRole_add:"http://127.0.0.1:2020/site/userRoleAdd",
+      siteUserRole_list:"http://127.0.0.1:2020/site/userRoleList",
+      siteUserRole_del:"http://127.0.0.1:2020/site/userRoleDel",
     }
 
 };

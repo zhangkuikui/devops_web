@@ -74,8 +74,7 @@ export default {
                                 type: 'success',
                                 duration:1000,
                                 });
-                                let redirect = decodeURIComponent(self.$route.query.redirect || '/'); 
-                                console.log(redirect);
+                                // let redirect = decodeURIComponent(self.$route.query.redirect || '/'); 
                                 // that.$router.push({ path: redirect })// 获取登录成功后要跳转的路由。decodeURIComponent函数编码的 URI 进行解码--xlz
                                 // console.log('认证成功');
                                 that.$router.push({path: '/'});

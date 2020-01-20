@@ -219,7 +219,11 @@
               if(ret_data.status==='ok'){
                 that.up();
                 if((self.current_page - 1) * self.page_size>self.total-2){
-                  self.current_page-=1;
+                  if(self.current_page-1<=0){
+                    self.current_page=1
+                  }else{
+                    self.current_page-=1;
+                  }
                 }
                 self.$notify({
                   title: '成功',

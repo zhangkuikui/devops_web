@@ -10,6 +10,7 @@ import Error from '../components/page/Error'
 import SiteMenu from '../components/page/site/siteMenu'
 import SiteRole from '../components/page/site/siteRole'
 import SiteRoleMenu from '../components/page/site/siteRoleMenu'
+import SiteUserRole from '../components/page/site/sitUserRole'
 
 
 
@@ -61,6 +62,14 @@ export default new Router({
           component: SiteRoleMenu
 
         },
+        {
+          //站点设置-用户绑定角色
+          path: '/site/userRole',
+          name: 'SiteUserRole',
+          component: SiteUserRole
+
+        },
+
       ]
     },
     {

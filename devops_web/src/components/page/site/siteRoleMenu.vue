@@ -132,9 +132,20 @@
           this.$axios({
             url:this.$apiUrl.site.siteMenuName_list
           }).then(res=>{
-            this.fromSelectMenu.cities=res.data.data;
-            this.fromSelectMenu.value=res.data.data[0].value;
-            this.fromSelectMenu.cities=res.data.data;
+            if(res.data.status==='ok'){
+              this.fromSelectMenu.cities=res.data.data;
+              this.fromSelectMenu.value=res.data.data[0].value;
+              this.fromSelectMenu.cities=res.data.data;
+            }else{
+              this.$notify({
+                title: res.data.status,
+                // message: '本次调用已报错'
+                dangerouslyUseHTMLString: true,
+                message: '<i>'+res.data.describe+'</i>',
+                type:'error',
+                duration:1000,
+              });
+            }
           })
         },
 
@@ -248,15 +259,31 @@
             __this.$axios({
               url:__this.$apiUrl.site.siteRoleName_list
             }).then(res=>{
-              __this.select_cities=res.data.data;
-              __this.select_value=res.data.data[0].value;
-              __this.fromSelectrole.cities=res.data.data;
+              if(res.data.status==='ok'){
+                __this.select_cities=res.data.data;
+                __this.select_value=res.data.data[0].value;
+                __this.fromSelectrole.cities=res.data.data;
+              }else{
+                __this.$notify({
+                  title: res.data.status,
+                  // message: '本次调用已报错'
+                  dangerouslyUseHTMLString: true,
+                  message: '<i>'+res.data.describe+'</i>',
+                  type:'error',
+                  duration:1000,
+                });
+              }
               resolve(1)
             });
 
             })
         ).then(res => {
-          let data_='?role='+__this.select_value;
+          var data_='';
+          if(__this.select_value===undefined){
+            data_='?role='
+          }else{
+            data_='?role='+__this.select_value;
+          }
           this.$axios({
             url:__this.$apiUrl.site.siteRoleMenu_list+data_
           }).then(res=>{
